@@ -4,10 +4,9 @@
 using namespace std;
 using namespace arma;
 
-int ccama(A,C,E,G,gamma,n,m,options)
 
-int main()
 
+int ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, struct options) 
 {
     if (n < 7)
     {
@@ -19,11 +18,11 @@ int main()
         double eps_prim = 1.e-5;
         double eps_dual = 1.e-4;
         double maxiter = 1.e5;
-        int Xinit = lyap(A, eye(m));
+        int Xinit = lyap (A, eye (m) );
         int Xinit = Xinit;
-        mat Zinit(n, m, fill::eye)
-        mat Y1init = lyap(A',-Xinit);
-        int Y1init = gamma * Y1init / norm(Y1init, 2);
+        mat Zinit(n, m, fill::eye);
+        mat Y1init = lyap(inv(A), -Xinit);
+        int Y1init = (gamma * Y1init) / (norm (Y1init, 2));
         mat Y2init = eye(n);
         int method = 1;
     }
@@ -40,10 +39,10 @@ int main()
 
         //AMA implementation
 
-        if method(n == 1) {
+    else if (n == 1) {
 
-            eigLadY = real(eig(A'*Y1 + Y1*A + C' * (E.*Y2) * C));
-            logdetLadY = sum(log(eigLadY));
+           double int eigLadY = real (eig( inv (A) * Y1 + Y1 * A + inv (C) * (E * Y2) * C));
+           double int logdetLadY = sum(log(eigLadY));
             dualY = logdetLadY - trace(G * Y2) + m;
 
             // identity matrix
