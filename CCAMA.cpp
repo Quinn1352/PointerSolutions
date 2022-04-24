@@ -113,14 +113,16 @@ int ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options options)
                     double logdetLadYnew = sum(log(eigladYnew));
                     double dualYnew = logdetLadYnew - trace(G * Y2new) + m;
 
-                    if (min(eigladYnew) < 0)
+                    if (min(eigladYnew) < 0){
                         rho = rho * beta;
+                    }
                     else if (dualYnew < dualY +
                             trace(gradD1 * (Y1new - Y1)) +
                             trace(gradD2 * (Y2new - Y2)) -
                             (0.5 / rho) * pow(norm(Y1new - Y1, "fro"), 2) -
-                            (0.5 / rho) * pow(norm(Y2new - Y1, "fro"), 2))
+                            (0.5 / rho) * pow(norm(Y2new - Y1, "fro"), 2)){
                         rho = rho * beta;
+                    }
                     else
                         break;
                 }
