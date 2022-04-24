@@ -5,7 +5,7 @@ using namespace arma;
 
 struct Options
 {
-   int rho;          // Initial step size
+   double rho;          // Initial step size
    double epsPrim;   // Primal constraint tolerance
    double epsDual;   // Duality gap tolerance
    int maxIter;      // Maximum number of iterations
