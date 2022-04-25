@@ -1,5 +1,6 @@
 #include <iostream>
 #include <armadillo>
+#include <math.h>
 #include "Lyap.h"
 #include "Options.h"
 #include "Output.h"
@@ -86,9 +87,9 @@ int main() {
 	Options options;
 
 	options.rho = 10;
-	options.epsPrim = 10 ^ -6;
-	options.epsDual = 10 ^ -6;
-	options.maxIter = 10 ^ 5;
+	options.epsPrim = pow(10, -6);
+	options.epsDual = pow(10, -6);
+	options.maxIter = pow(10, 5);
 
 	//initial conditions
 	mat Xinit = lyap(A, Ibig);
