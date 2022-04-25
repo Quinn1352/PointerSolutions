@@ -1,5 +1,9 @@
 #include <iostream>
 #include <armadillo>
+#include "Lyap.h"
+#include "Options.h"
+#include "Output.h"
+#include "CCAMA.h"
 
 using namespace std;
 using namespace arma;
@@ -56,8 +60,8 @@ int main() {
 	mat Bc = join_cols(TEMP, Bf);
 	//Lyapunov equation for covariance matrix of the cascade systems
 	TEMP = Bc * Bc.t();
-	//mat P(3*N, 3*N) = lyap(Ac, TEMP);
 	mat P(3 * N, 3 * N);
+	P = lyap(Ac, TEMP);
 
 	
 	//covariance of the state of the plant
@@ -79,7 +83,28 @@ int main() {
 	int gamma = 10;
 
 	//input options into the optimization procedure
+	Options options;
 
+	options.rho = 10;
+	options.epsPrim = 10 ^ -6;
+	options.epsDual = 10 ^ -6;
+	options.maxIter = 10 ^ 5;
+
+	//initial conditions
+	mat Xinit = lyap(A, Ibig);
+	options.xInit = Xinit;
+	options.zInit = Ibig;
+
+	mat Y1init = lyap(A.t(), -Xinit);
+	double temp = norm(Y1init, 2);
+	options.yOneInit = (gamma * Y1init) / temp;
+	int n = C.n_rows;
+	int m = C.n_cols;
+	mat Y2Init(n, n, fill::eye);
+	options.yTwoInit = Y2Init;
+	options.method = 1;
+
+	Output output = ccama(A, C, E, G, gamma, n, m, options);
 
 
 }
