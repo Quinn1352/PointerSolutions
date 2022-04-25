@@ -96,8 +96,8 @@ int main() {
 	options.zInit = Ibig;
 
 	mat Y1init = lyap(A.t(), -Xinit);
-	double temp = norm(Y1init, 2);
-	options.yOneInit = (gamma * Y1init) / temp;
+	double tempNorm = norm(Y1init, 2);
+	options.yOneInit = (gamma * Y1init) / tempNorm;
 	int n = C.n_rows;
 	int m = C.n_cols;
 	mat Y2Init(n, n, fill::eye);
