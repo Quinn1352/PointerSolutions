@@ -48,11 +48,10 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
     mat Z = options.xInit;
     mat Y1 = options.yOneInit;
     mat Y2 = options.yTwoInit;
-
+    
+    
     //AMA implementation
     if(options.method == 1) {
-
-
 
            vec eigLadY = real(eig_gen(A.t() * Y1 + Y1 * A + C.t() * (E%Y2) * C));   //% is element wise multiplication
            double logdetLadY = sum(log(eigLadY));
@@ -66,14 +65,13 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
             double rho1 = rho0;
             vector<int> bbfailures;   //empty 0x0 matrix; not sure the use; come back to
 
-            /*print function to print all 
-              matrix values needs to go hear*/
+            //print function to print all matrix values needs to go hear
 
-            /*Timer should go here*/
+            //Timer should go here
 
-
+            
             //Use AMA to solve the gamma parametized problem
-            int AMAstep;
+            int AMAstep = 0; 
             for ( AMAstep = 1; AMAstep <= MaxIter; AMAstep++) {
 
                 //X minimization step
@@ -95,6 +93,8 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
                 
                 vec Svecnew;
                 double dualYnew;
+                mat Rnew1;
+
 
                 for (int j = 1; j <= 50; j++) {
 
@@ -115,7 +115,7 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
                     Znew = (Znew + Znew.t()) / 2;
 
                     //Y Update
-                    mat Rnew1 = gradD1 + Znew;
+                    Rnew1 = gradD1 + Znew;
                         //Lagrange multiplier update step
                     Y1new = Y1 + rho * Rnew1;
                     Y2new = Y2 + rho * Rnew2;
@@ -141,22 +141,30 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
                     else
                         break;
                 }
+                
 
-                /*Quinn's code goes here*/
+                //Quinn's code goes here
                 //primal residual
-                mat Rnew1 = (A * Xnew) + (Xnew * A.t()) + Znew;
-                mat Rnew2 = E % (C * Xnew * C.t()) - G;
-                double res_prim = sqrt(pow(norm(Rnew1, 'fro'), 2) + pow(norm(Rnew2, 'fro'), 2));
+                
 
+                Rnew1 = (A * Xnew) + (Xnew * A.t()) + Znew;
+                Rnew2 = E % (C * Xnew * C.t()) - G;
+                double normRnew1 = norm(Rnew1, "fro");
+                normRnew1 = pow(normRnew1, 2);
+                double normRnew2 = norm(Rnew2, "fro");
+                normRnew2 = pow(normRnew2, 2);
+                double sumNorms = normRnew1 + normRnew2;
+                double res_prim = sqrt(sumNorms);
+                
+                
                 //calculating the duality gap
-                //doesn't like log_det(X) because trying to store in a double
                 cx_double eta =   -log_det(X) + (gamma * sum(Svecnew) - dualYnew); //not sure what the dualYnew is supposed to be
-
+                
                 if (AMAstep % 100 == 0) {
                     cout << rho1 << "\t" << rho << "\t" << eps_prim << "\t" << res_prim << "\t" <<
                         eps_dual << "\t" << abs(eta) << "\t" << AMAstep << endl;
-                }
-
+                } 
+                
                 //BB stepsize selection starts here
                 mat Xnew1 = (A.t() * Y1new) + (Y1new * A) + (C.t() * (E % Y2new) * C);
                 Xnew1 = solve(Xnew1, Ibig);
@@ -165,39 +173,70 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
                 //gradient of dual function
                 mat gradD1new = (A * Xnew1) + (Xnew1 * A.t());
                 mat gradD2new = (E % (C * Xnew1 * C.t())) - G;
-                rho1 = real(pow(norm(Y1new - Y1, 'fro'), 2) + pow(norm(Y2new - Y2, 'fro'), 2) /
-                    (trace((Y1new - Y1) * (gradD1 - gradD1new)) + trace((Y2new - Y2) * (gradD2 - gradD2new))));
+
+                //numerator for rho1
+                mat changeY1 = Y1new - Y1;
+                cx_double changeY1Norm = norm(changeY1, "fro");
+                changeY1Norm = pow(changeY1Norm, 2);
+                mat changeY2 = Y2new - Y2;
+                cx_double changeY2Norm = norm(changeY2, "fro");
+                changeY2Norm = pow(changeY2Norm, 2);
+                cx_double rho1num = changeY1Norm + changeY2Norm;
+
+                //denominator for rho1
+                mat changeGradD1 = gradD1 - gradD1new;
+                mat prodChangY1ChangeGradD1 = changeY1 * changeGradD1;
+                cx_double traceY1 = trace(prodChangY1ChangeGradD1);
+                mat changeGradD2 = gradD2 - gradD2new;
+                mat prodChangY2ChangeGradD2 = changeY2 * changeGradD2;
+                cx_double traceY2 = trace(prodChangY2ChangeGradD2);
+                cx_double rho1den = traceY1 + traceY2;
+
+                cx_double rho1Complex = rho1num / rho1den;
+                rho1 = real(rho1Complex);
+
                 mat RHO1(1, 1);
-                RHO1(1, 1) = rho1;
+                RHO1(0, 0) = rho1;
                 if (rho1 < 0 || RHO1.has_nan()) {
                     rho1 = rho0;
                     bbfailures.push_back(AMAstep);  
                 }
-                //end bb stepsize selection
-
-                //record path of relevant primal and dual quantities
-
+                //end bb stepsize selection */
                 
+                //record path of relevant primal and dual quantities 
 
-                output.Jp = -log(det(Xnew)) + (gamma * sum(svd(Znew)));
+                double detXnew = det(Xnew);
+                double logdetXnew = log(detXnew);
+                double neglogdetXnew = -1 * logdetXnew;
+                vec svdZnew = svd(Znew);
+                double nuc_normZnew = sum(svdZnew);
+                nuc_normZnew = nuc_normZnew * gamma;
+                
+                output.Jp = neglogdetXnew + nuc_normZnew;
                 output.Jd = real(dualYnew);
                 output.Rp = res_prim;
                 output.dg = abs(eta);
-                //NEED AN OUTPUT.TIME
-
+                //NEED AN OUTPUT.TIME 
+                
+                
                 //various stopping criteria
                 if (abs(eta) < eps_dual && res_prim < eps_prim) {
                     cout << "AMA converged to assigned accuracy!!!" << endl;
                     cout << "AMA Steps: " << AMAstep << endl;
                     cout << rho1 << "\t" << rho << "\t" << eps_prim << "\t" << res_prim << "\t" <<
                         eps_dual << "\t" << abs(eta) << "\t" << AMAstep << endl;
-                }
+                        break;
+                } 
 
                 Y1 = Y1new;
                 Y2 = Y2new;
                 dualY = dualYnew;  
-            }
-
+                // */
+                
+                
+            } 
+            
+            
             if (AMAstep == MaxIter) {
                 output.flag = 0;
             }
@@ -210,10 +249,10 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
             output.YOne = Y1new;
             output.YTwo = Y2new;
             output.steps = AMAstep;
+            
     }
+    
 
-    /*this is just a place holder as I don't believe CCAMA returns an int but until we figure
-    what it actually returns, we'll return a 0 and make the function return an int*/
     return output;
 }
 

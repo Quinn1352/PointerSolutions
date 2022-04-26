@@ -10,7 +10,7 @@ struct Output
    mat Z;      // Forcing correlation matrix resulting from optimization
    mat YOne;   // First dual variable resulting from optimization
    mat YTwo;   // Second dual variable resulting from optimization
-   double Jp;  // Value of primal function at given step
+   cx_double Jp;  // Value of primal function at given step
    double Jd;  // Value of dual function at given step
    double Rp;  // Primal residual at given step
    int dg;     // Duality gap at given step
