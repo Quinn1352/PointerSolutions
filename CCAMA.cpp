@@ -54,8 +54,10 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
     if(options.method == 1) {
 
            vec eigLadY = real(eig_gen(A.t() * Y1 + Y1 * A + C.t() * (E%Y2) * C));   //% is element wise multiplication
+           eigLadY.save("eigLadY.csv", csv_ascii);
+           cout << "saved";
            double logdetLadY = sum(log(eigLadY));
-           double dualY = logdetLadY - trace(G * Y2) + m;
+           cx_double dualY = logdetLadY - trace(G * Y2) + m;
 
             // identity matrix
             mat Ibig = I_m;
@@ -66,6 +68,7 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
             vector<int> bbfailures;   //empty 0x0 matrix; not sure the use; come back to
 
             //print function to print all matrix values needs to go hear
+            cout << "Rho_BB \t\t rho \t\t eps_prim \t eps_dual \t abs(eta) \t iter \n";
 
             //Timer should go here
 
@@ -92,7 +95,7 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
                 //declarations moved outside for loop so they can be called later
                 
                 vec Svecnew;
-                double dualYnew;
+                cx_double dualYnew;
                 mat Rnew1;
 
 
@@ -123,15 +126,18 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
                     Y2new = (Y2new + Y2new.t()) / 2;
 
                     //e-values of Xinv
-                    vec eigladYnew = real(eig_gen(A.t() * Y1new + Y1new * A + C.t() * (E % Y1new) * C));
+                    mat ladYnew = (A.t() * Y1new) + (Y1new * A) + (C.t() * (E % Y2new) * C);
+                    vec eigladYnew = real(eig_gen((A.t() * Y1new) + (Y1new * A) + (C.t() * (E % Y2new) * C)));
 
-                    double logdetLadYnew = sum(log(eigladYnew));
-                    dualYnew = logdetLadYnew - trace(G * Y2new) + m;
+                    cx_double logdetLadYnew = log_det(ladYnew);
+                    double doubleOfM = m;
+                    dualYnew = logdetLadYnew - trace(G * Y2new) + doubleOfM;
+
 
                     if (min(eigladYnew) < 0){
                         rho = rho * beta;
                     }
-                    else if (dualYnew < dualY +
+                    else if (real(dualYnew) < real(dualY) +
                             trace(gradD1 * (Y1new - Y1)) +
                             trace(gradD2 * (Y2new - Y2)) -
                             (0.5 / rho) * pow(norm(Y1new - Y1, "fro"), 2) -
@@ -158,8 +164,8 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
                 
                 
                 //calculating the duality gap
-                cx_double eta =   -log_det(X) + (gamma * sum(Svecnew) - dualYnew); //not sure what the dualYnew is supposed to be
-                
+                cx_double eta =   -log_det(X) + (gamma * sum(Svecnew) - dualYnew); 
+
                 if (AMAstep % 100 == 0) {
                     cout << rho1 << "\t" << rho << "\t" << eps_prim << "\t" << res_prim << "\t" <<
                         eps_dual << "\t" << abs(eta) << "\t" << AMAstep << endl;
@@ -251,7 +257,6 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
             output.steps = AMAstep;
             
     }
-    
 
     return output;
 }
