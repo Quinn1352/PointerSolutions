@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <armadillo>
 #include <math.h>
 #include "Lyap.h"
@@ -11,6 +12,8 @@ using namespace arma;
 
 Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options options) 
 {       
+    int dispW = 20;
+
     //declarations needed for output
     Output output; 
     mat Y1new;
@@ -54,8 +57,6 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
     if(options.method == 1) {
 
            vec eigLadY = real(eig_gen(A.t() * Y1 + Y1 * A + C.t() * (E%Y2) * C));   //% is element wise multiplication
-           eigLadY.save("eigLadY.csv", csv_ascii);
-           cout << "saved";
            double logdetLadY = sum(log(eigLadY));
            cx_double dualY = logdetLadY - trace(G * Y2) + m;
 
@@ -68,7 +69,8 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
             vector<int> bbfailures;   //empty 0x0 matrix; not sure the use; come back to
 
             //print function to print all matrix values needs to go hear
-            cout << "Rho_BB \t\t rho \t\t eps_prim \t eps_dual \t abs(eta) \t iter \n";
+            cout << left;
+            cout << setw(dispW) << "Rho_BB" << setw(dispW) << "rho" << setw(dispW) << "eps_prim" << setw(dispW) << "res_prim" << setw(dispW) << "eps_dual" << setw(dispW) << "abs(eta)" << setw(dispW) << "iter" << endl;
 
             //Timer should go here
 
@@ -101,7 +103,7 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
 
                 for (int j = 1; j <= 50; j++) {
 
-                    int a = gamma / rho;
+                    double a = gamma / rho;
 
                     //Z minimization step
                     mat Wnew = -(A * Xnew + Xnew * A.t() + (1 / rho) * Y1);
@@ -141,7 +143,7 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
                             trace(gradD1 * (Y1new - Y1)) +
                             trace(gradD2 * (Y2new - Y2)) -
                             (0.5 / rho) * pow(norm(Y1new - Y1, "fro"), 2) -
-                            (0.5 / rho) * pow(norm(Y2new - Y1, "fro"), 2)){
+                            (0.5 / rho) * pow(norm(Y2new - Y2, "fro"), 2)){
                         rho = rho * beta;
                     }
                     else
@@ -164,11 +166,11 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
                 
                 
                 //calculating the duality gap
-                cx_double eta =   -log_det(X) + (gamma * sum(Svecnew) - dualYnew); 
+                cx_double eta =   -logdetX + (gamma * sum(Svecnew) - dualYnew); 
 
                 if (AMAstep % 100 == 0) {
-                    cout << rho1 << "\t" << rho << "\t" << eps_prim << "\t" << res_prim << "\t" <<
-                        eps_dual << "\t" << abs(eta) << "\t" << AMAstep << endl;
+                    cout << setw(dispW) << rho1 << setw(dispW) << rho << setw(dispW) << eps_prim << setw(dispW) << res_prim << setw(dispW) <<
+                        eps_dual << setw(dispW) << abs(eta) << setw(dispW) << AMAstep << endl;
                 } 
                 
                 //BB stepsize selection starts here

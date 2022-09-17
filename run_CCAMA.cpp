@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <armadillo>
 #include <math.h>
 #include "Lyap.h"
@@ -9,10 +10,11 @@
 using namespace std;
 using namespace arma;
 
+
 int main() {
 
 	//number of masses
-	int N = 10;
+	int N = 2;
 
 	//identity and zero matrices
 	mat I(N, N, fill::eye);
@@ -67,9 +69,9 @@ int main() {
 	
 	//covariance of the state of the plant
 	mat Sigma(2 * N, 2 * N);
-	for (int i = 1; i < (2 * N) + 1; i++) {
-		for (int j = 1; j < (2 * N) + 1; j++) {
-			Sigma(i-1, j-1) = P(i, j);
+	for (int i = 0; i < (2 * N); i++) {
+		for (int j = 0; j < (2 * N); j++) {
+			Sigma(i, j) = P(i, j);
 		}
 	}
 
@@ -105,7 +107,12 @@ int main() {
 	options.yTwoInit = Y2Init;
 	options.method = 1;
 
+
+
 	Output output = ccama(A, C, E, G, gamma, n, m, options);
 
 
+
 }
+
+//*/
