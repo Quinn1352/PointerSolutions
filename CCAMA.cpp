@@ -231,8 +231,8 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
                 if (abs(eta) < eps_dual && res_prim < eps_prim) {
                     cout << "AMA converged to assigned accuracy!!!" << endl;
                     cout << "AMA Steps: " << AMAstep << endl;
-                    cout << rho1 << "\t" << rho << "\t" << eps_prim << "\t" << res_prim << "\t" <<
-                        eps_dual << "\t" << abs(eta) << "\t" << AMAstep << endl;
+                    cout << setw(dispW) << rho1 << setw(dispW) << rho << setw(dispW) << eps_prim << setw(dispW) << res_prim << setw(dispW) <<
+                        eps_dual << setw(dispW) << abs(eta) << setw(dispW) << AMAstep << endl;
                         break;
                 } 
 
