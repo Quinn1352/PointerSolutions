@@ -14,4 +14,5 @@ struct Options
    mat yOneInit;     // Initial value of dual matrix Y1
    mat yTwoInit;     // Initial value of dual matrix Y2
    int method;       // Method selection option (Most likely unused)
+   bool useOptions; //used for CCAMA to determine whether to use options or to use default inputs
 };

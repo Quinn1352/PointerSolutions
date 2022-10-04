@@ -6,15 +6,17 @@
 #include "Options.h"
 #include "Output.h"
 #include "CCAMA.h"
+#include <chrono>
 
 using namespace std;
 using namespace arma;
+using namespace chrono;
 
 
 int main() {
 
 	//number of masses
-	int N = 2;
+	int N = 20;
 
 	//identity and zero matrices
 	mat I(N, N, fill::eye);
@@ -107,9 +109,15 @@ int main() {
 	options.yTwoInit = Y2Init;
 	options.method = 1;
 
+	options.useOptions = true;
 
-
+	
+	auto tic = high_resolution_clock::now();
 	Output output = ccama(A, C, E, G, gamma, n, m, options);
+	auto toc = high_resolution_clock::now();
+
+	auto duration = duration_cast<seconds>(toc - tic);
+	cout << "CCAMA exection time was " << duration.count() << " seconds" << endl;
 
 
 

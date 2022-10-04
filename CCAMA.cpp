@@ -25,22 +25,22 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
     mat I_m(m, m, fill::eye);
     mat I_n(n, n, fill::eye);
 
-    /*This version of the code only allows for a 7 parameter ccama call meaning we use
-      default options. code to determine the number of arguments will need to go hear to determine
-      if there are 8 arguments (customs options) or 7 arguments (default options)*/
+    if (!options.useOptions) { //uses default options if useOptions is false
+        options.rho = 10;
+        options.epsPrim = 1.e-5;
+        options.epsDual = 1.e-4;
+        options.maxIter = 1.e5;
+        mat Xinit = lyap(A, I_m);
+        options.xInit = Xinit;
+        options.zInit = I_m;
+        mat Y1init = lyap(A.t(), -Xinit);       //.t() is transponse of that matrix
+        options.yOneInit = (gamma * Y1init) / (norm(Y1init, 2));
+        options.yTwoInit = I_n;
+        options.method = 1;
+    }
 
     //default options parameters if no options are given
-    options.rho = 10;
-    options.epsPrim = 1.e-5;
-    options.epsDual = 1.e-4;
-    options.maxIter = 1.e5;
-    mat Xinit = lyap (A, I_m);
-    options.xInit = Xinit;
-    options.zInit = I_m;
-    mat Y1init = lyap(A.t(), -Xinit);       //.t() is transponse of that matrix
-    options.yOneInit = (gamma * Y1init) / (norm (Y1init, 2));
-    options.yTwoInit = I_n;
-    options.method = 1;
+    
 
     //Data Preprocessing 
     double rho0 = options.rho;
@@ -233,6 +233,10 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
                     cout << "AMA Steps: " << AMAstep << endl;
                     cout << setw(dispW) << rho1 << setw(dispW) << rho << setw(dispW) << eps_prim << setw(dispW) << res_prim << setw(dispW) <<
                         eps_dual << setw(dispW) << abs(eta) << setw(dispW) << AMAstep << endl;
+
+                    Xnew.save("Xnew.csv", csv_ascii);
+                    Znew.save("Znew.csv", csv_ascii);
+
                         break;
                 } 
 
