@@ -16,7 +16,7 @@ using namespace chrono;
 int main() {
 
 	//number of masses
-	int N = 20;
+	int N = 19;
 
 	//identity and zero matrices
 	mat I(N, N, fill::eye);
@@ -116,8 +116,12 @@ int main() {
 	Output output = ccama(A, C, E, G, gamma, n, m, options);
 	auto toc = high_resolution_clock::now();
 
-	auto duration = duration_cast<seconds>(toc - tic);
-	cout << "CCAMA exection time was " << duration.count() << " seconds" << endl;
+	auto duration = duration_cast<microseconds>(toc - tic);
+	double time = duration.count() * pow(10, -6);
+	cout << fixed << setprecision(4) << "CCAMA exection time was " << time << " seconds" << endl;
+
+	output.X.save("Xout.csv", csv_ascii);
+	output.Z.save("Zout.csv", csv_ascii);
 
 
 

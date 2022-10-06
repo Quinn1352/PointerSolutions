@@ -234,9 +234,6 @@ Output ccama (mat A, mat C, mat E, mat G, int gamma, int n, int m, Options optio
                     cout << setw(dispW) << rho1 << setw(dispW) << rho << setw(dispW) << eps_prim << setw(dispW) << res_prim << setw(dispW) <<
                         eps_dual << setw(dispW) << abs(eta) << setw(dispW) << AMAstep << endl;
 
-                    Xnew.save("Xnew.csv", csv_ascii);
-                    Znew.save("Znew.csv", csv_ascii);
-
                         break;
                 } 
 
