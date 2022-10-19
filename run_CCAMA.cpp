@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <Eigen/Dense>
+#include <Eigen/Core>
 #include <math.h>
 #include "Lyap.h"
 #include "Options.h"
@@ -17,11 +18,15 @@ using namespace chrono;
 
 int main()
 {
+	// Initialize parallelization and set number of threads
+	Eigen::initParallel();
+	Eigen::setNbThreads(2);
+
 	// Number of masses
 	int N = 2;
 
 	MatrixXd I(N, N);
-	I = MaIdentity(I.rows(), I.cols());
+	I = MatrixXd::Identity(I.rows(), I.cols());
 
 	MatrixXd Ibig(N * 2, N * 2);
 	Ibig = MatrixXd::Identity(Ibig.rows(), Ibig.cols());

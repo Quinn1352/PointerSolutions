@@ -5,6 +5,7 @@
 #include <Eigen/Eigenvalues>
 #include <Eigen/SVD>
 #include <Eigen/LU>
+#include <Eigen/Core>
 #include <math.h>
 #include "Lyap.h"
 #include "Options.h"
@@ -102,7 +103,8 @@ Output ccama(MatrixXd A, MatrixXd C, MatrixXd E, MatrixXd G,
 			Xnew = (Xnew + Xnew.transpose()) / 2;
 
 			VectorXd eigX = Xnew.eigenvalues().real();
-			double logdetX = eigX.log().sum();
+			ArrayXd tempArray = eigX.array().log();
+			double logdetX = tempArray.matrix().sum();
 
 			// Gradient of the dual function
 			MatrixXd gradD1 = A * Xnew + Xnew * A.transpose();

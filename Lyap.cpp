@@ -1,4 +1,5 @@
 #include <Eigen/Dense>
+#include <Eigen/Core>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
