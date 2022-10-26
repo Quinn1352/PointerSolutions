@@ -19,7 +19,6 @@ using namespace chrono;
 int main()
 {
 	// Initialize parallelization and set number of threads
-	Eigen::initParallel();
 	Eigen::setNbThreads(2);
 
 	// Number of masses
