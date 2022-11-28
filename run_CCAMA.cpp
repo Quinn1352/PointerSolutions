@@ -11,15 +11,17 @@
 #include <fstream>
 
 using namespace std;
-using namespace Eigen;
+//using namespace Eigen;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using namespace chrono;
 
+MatrixXd Toeplitz(VectorXd);
+
 int main()
 {
 	// Initialize parallelization and set number of threads
-	Eigen::setNbThreads(2);
+	//Eigen::setNbThreads(2);
 
 	// Number of masses
 	int N = 2;
@@ -44,7 +46,7 @@ int main()
 	MatrixXd TEMP1(ZZ.rows(), ZZ.cols() + I.cols());
 	TEMP1 << ZZ, I;
 	
-	MatrixXd TEMP2(-T.rows(), -T.cols() + -I.cols());
+	MatrixXd TEMP2(T.rows(), T.cols() + I.cols());
 	TEMP2 << -T, -I;
 
 	MatrixXd A(TEMP1.rows() + TEMP2.rows(), TEMP1.cols());
@@ -74,11 +76,11 @@ int main()
 	MatrixXd TEMP4(N, 2 * N);
 	TEMP4 = MatrixXd::Zero(TEMP4.rows(), TEMP4.cols());
 
-	MatrixXd TEMP5(TEMP3.rows(), TEMP3.cols() + Af.cols());
-	TEMP5 << TEMP3, Af;
+	MatrixXd TEMP5(TEMP4.rows(), TEMP4.cols() + Af.cols());
+	TEMP5 << TEMP4, Af;
 
-	MatrixXd Ac(TEMP1.rows() + TEMP2.rows(), TEMP1.cols());
-	Ac << TEMP1, TEMP2;
+	MatrixXd Ac(TEMP3.rows() + TEMP5.rows(), TEMP3.cols());
+	Ac << TEMP3, TEMP5;
 
 	// Bc = [B*Df; Bf];
 
@@ -95,11 +97,11 @@ int main()
 	// covariance of the state of the plant
 	MatrixXd Sigma(2 * N, 2 * N);
 
-	for (int i = 0; i < (2 * N); i++)
+	for (int i = 0; i < Sigma.cols(); i++)
 	{
-		for (int j = 0; j < (2 * N); j++)
+		for (int j = 0; j < Sigma.rows(); j++)
 		{
-			Sigma(i, j) = P(i, j);
+			Sigma(j, i) = P(j, i);
 		}
 	}
 
@@ -136,7 +138,7 @@ int main()
 	int n = C.rows();
 	int m = C.cols();
 
-	MatrixXd Y2Init(N, N);
+	MatrixXd Y2Init(n, n);
 	Y2Init = MatrixXd::Identity(Y2Init.rows(), Y2Init.cols());
 
 	options.yTwoInit = Y2Init;
@@ -152,8 +154,8 @@ int main()
 	double time = duration.count() * pow(10, -6);
 	cout << fixed << setprecision(4) << "CCAMA execution time was " << time << "seconds" << endl;
 
-	saveData("Xout.csv", output.X);
-	saveData("Zout.csv", output.Z);
+	// saveData("Xout.csv", output.X);
+	// saveData("Zout.csv", output.Z);
 }
 
 MatrixXd Toeplitz(VectorXd input)
@@ -177,8 +179,10 @@ MatrixXd Toeplitz(VectorXd input)
 			}
 		}
 	}
-}
 
+	return output;
+}
+/*
 void saveData(string fileName, MatrixXd matrix)
 {
 	const static IOFormat CSVFormat(FullPrecision, DontAlignCols, ", ", "\n");
@@ -190,3 +194,4 @@ void saveData(string fileName, MatrixXd matrix)
 		file.close();
 	}
 }
+*/

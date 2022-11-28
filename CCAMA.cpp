@@ -144,7 +144,7 @@ Output ccama(MatrixXd A, MatrixXd C, MatrixXd E, MatrixXd G,
 				Svecnew = (multSvec.cwiseProduct(Svec)).cwiseProduct(comparison.matrix());
 
 				// update Z
-				Znew = U * Svecnew.diagonal() * V.transpose();
+				Znew = U * Svecnew.asDiagonal() * V.transpose();
 				Znew = (Znew + Znew.transpose()) / 2;
 
 				// update Y

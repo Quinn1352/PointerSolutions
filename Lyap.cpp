@@ -5,6 +5,8 @@ using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using Eigen::Map;
 
+MatrixXd Kron(MatrixXd, MatrixXd);
+
 MatrixXd Lyap(MatrixXd A, MatrixXd Q)
 {
 	MatrixXd I(A.rows(), A.cols());
@@ -18,7 +20,7 @@ MatrixXd Lyap(MatrixXd A, MatrixXd Q)
 
 	VectorXd vecX = -(kronSum.householderQr().solve(vecQ));
 
-	Map<MatrixXd> X(vecX.data(), vecX.rows(), vecX.cols());
+	MatrixXd X = vecX.reshaped(A.rows(), A.cols());
 
 	return X;
 }
