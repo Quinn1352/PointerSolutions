@@ -14,9 +14,11 @@ using namespace chrono;
 
 
 int main() {
+	
+	auto setuptic = high_resolution_clock::now();
 
 	//number of masses
-	int N = 19;
+	int N = 10;
 
 	//identity and zero matrices
 	mat I(N, N, fill::eye);
@@ -66,7 +68,13 @@ int main() {
 	//Lyapunov equation for covariance matrix of the cascade systems
 	TEMP = Bc * Bc.t();
 	mat P(3 * N, 3 * N);
+	auto lyaptic = high_resolution_clock::now();
 	P = lyap(Ac, TEMP);
+	auto lyaptoc = high_resolution_clock::now();
+
+	auto lyapduration = duration_cast<microseconds>(lyaptoc - lyaptic);
+	double lyaptime = lyapduration.count() * pow(10, -6);
+	cout << fixed << setprecision(4) << "Lyap exection time for N = " << N << " was: " << lyaptime << " seconds" << endl;
 
 	
 	//covariance of the state of the plant
@@ -110,6 +118,11 @@ int main() {
 	options.method = 1;
 
 	options.useOptions = true;
+	
+	auto setuptoc = high_resolution_clock::now();
+	auto setupduration = duration_cast<microseconds>(setuptoc - setuptic);
+	double setuptime = setupduration.count() * pow(10, -6);
+	cout << fixed << setprecision(4) << "Total set up time for N = " << N << " was: " << setuptime << " seconds" << endl;
 
 	
 	auto tic = high_resolution_clock::now();
@@ -118,7 +131,7 @@ int main() {
 
 	auto duration = duration_cast<microseconds>(toc - tic);
 	double time = duration.count() * pow(10, -6);
-	cout << fixed << setprecision(4) << "CCAMA exection time was " << time << " seconds" << endl;
+	cout << fixed << setprecision(4) << "CCAMA exection time for N = " << N << " was: " << time << " seconds" << endl;
 
 	output.X.save("Xout.csv", csv_ascii);
 	output.Z.save("Zout.csv", csv_ascii);
