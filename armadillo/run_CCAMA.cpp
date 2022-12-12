@@ -101,7 +101,7 @@ int main() {
 	options.rho = 10;
 	options.epsPrim = pow(10, -6);
 	options.epsDual = pow(10, -6);
-	options.maxIter = pow(10, 5);
+	options.maxIter = pow(10, 6);
 
 	//initial conditions
 	mat Xinit = lyap(A, Ibig);
