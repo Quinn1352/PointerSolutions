@@ -1,4 +1,9 @@
 %%% test some fucking fro norms my dude%%
+  
+  %move the csv files from cpp into the same folder as matlab code
+  %run matlab at equivalent N size
+  %don't clear any of the variables
+  %run froTest
 
 mlX = output.X;
 mlZ = output.Z;
